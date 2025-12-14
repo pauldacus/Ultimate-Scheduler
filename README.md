@@ -29,3 +29,6 @@ Upgrade process:
 2) Flog it unmerciful to get the things you want
 
 Now go and schedule the hell outta your life! You know you want to!
+
+HELP SECTION:
+Sometimes the todo area doesn't seem to want to reorder items after I've updated the code. "Ctrl-R" usually sets things right by re-indexing items.
