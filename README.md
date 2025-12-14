@@ -34,9 +34,9 @@ HELP SECTION:
 Sometimes the todo area doesn't seem to want to reorder items after I've updated the code. "Ctrl-R" usually sets things right by re-indexing items.
 
 FAQ:
-Can I color code tags to what I want? No.
-Can I add more Urgency levels? No.
-Can I have this other 3rd thing? No.
+- Can I color code tags to what I want? No.
+- Can I add more Urgency levels? No.
+- Can I have this other 3rd thing? No.
 
 ## Inigo Montoya: "Offer me money."
 ## Count Rugen: "Yes!"
