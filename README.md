@@ -16,3 +16,16 @@ appointment and todo as needed. The todo area is sortable.
 
 Tags auto-color according to the first tag, and matching text pops up matching tags preventing misspellings and unwanted spelling variations.
 Green, yellow and red dots correspond to low, medium and high urgency.
+
+Ninja hints:
+Most day numbers are clickable. Click a day number on the monthly view takes you down to the weekly view. Click a day number on the weekly view takes you to the daily view.
+Data is saved on your machine, and you can save and restore JSON, lower left Export and Import buttons.
+Arrow keys work in new item dialog box, easy to set values without using mouse.
+"Done" items still show up in PDF views so you have a record of what you've done.
+The Yearly view is not really meant to show actual items, but give you an idea of what the Big Picture looks like.
+
+Upgrade process:
+1) Throw scheduler.html into Gemini
+2) Flog it unmerciful to get the things you want
+
+Now go and schedule the hell outta your life! You know you want to!
