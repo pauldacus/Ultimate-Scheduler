@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduler Ultimate: Current Time Line</title>
+    <title>Scheduler Ultimate: Perfected Day View</title>
     <style>
         :root {
             --bg-color: #f4f4f4;
@@ -110,7 +110,15 @@
         .task-card * { pointer-events: none; } 
         .task-card:active { cursor: grabbing; }
         
-        .task-absolute { position: absolute; width: 92%; left: 4%; background: rgba(255,255,255,0.95); box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
+        /* FIX: Replaced percentage width/left with fixed pixels to prevent "Half Inch Offset" */
+        .task-absolute { 
+            position: absolute; 
+            left: 4px; 
+            width: calc(100% - 10px); 
+            background: rgba(255,255,255,0.95); 
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); 
+        }
+        
         .task-done { opacity: 0.6; text-decoration: line-through; background: #f9f9f9; }
         
         .tags-display { font-size: 0.7em; color: #666; margin-top: 2px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 14px; }
@@ -909,7 +917,6 @@
                     const now = new Date();
                     let h = now.getHours();
                     let m = now.getMinutes();
-                    // Snap to nearest 15
                     m = Math.round(m / 15) * 15;
                     if (m === 60) { m = 0; h = (h + 1) % 24; }
                     if(h >= startH && h < endH) {
