@@ -32,3 +32,18 @@ Now go and schedule the hell outta your life! You know you want to!
 
 HELP SECTION:
 Sometimes the todo area doesn't seem to want to reorder items after I've updated the code. "Ctrl-R" usually sets things right by re-indexing items.
+
+FAQ:
+Can I color code tags to what I want? No.
+Can I add more Urgency levels? No.
+Can I have this other 3rd thing? No.
+
+## Inigo Montoya: "Offer me money."
+## Count Rugen: "Yes!"
+## Inigo Montoya: "Power, too. Promise me that."
+## Count Rugen: "All that I have and more. Please..."
+## Inigo Montoya: "Offer me anything I ask for."
+## Count Rugen: "Anything you want..."
+## Inigo Montoya: "I want my father back, you son of a bitch!"
+
+This somehow translates directly into how I feel about Customer Service & feature requests, although I'm not sure how.
