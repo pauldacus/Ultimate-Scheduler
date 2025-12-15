@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduler Ultimate: Right-Click Done</title>
+    <title>Scheduler Ultimate: Live Time Line</title>
     <style>
         :root {
             --bg-color: #f4f4f4;
@@ -74,7 +74,7 @@
         /* --- CURRENT TIME LINE --- */
         .current-time-line {
             position: absolute; left: 0; width: 100%; height: 2px; background-color: red;
-            z-index: 5; pointer-events: none;
+            z-index: 5; pointer-events: none; transition: top 0.3s ease; /* Smooth move */
         }
         .current-time-line::before {
             content: ''; position: absolute; left: -5px; top: -3px; width: 8px; height: 8px;
@@ -464,6 +464,20 @@
         runSlideLogic();
         updateTagList();
         render();
+
+        // --- AUTO UPDATE TIME LINE ---
+        setInterval(function() {
+            const line = document.querySelector('.current-time-line');
+            if(line) {
+                const now = new Date();
+                let h = now.getHours();
+                let m = now.getMinutes();
+                m = Math.round(m / 15) * 15;
+                if (m === 60) { m = 0; h = (h + 1) % 24; }
+                const topPx = (h * 60) + m; 
+                line.style.top = topPx + 'px';
+            }
+        }, 60000); // Check every 60 seconds
 
         document.addEventListener('keydown', (e) => {
             const isModalOpen = document.getElementById('modal').style.display === 'flex';
