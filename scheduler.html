@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduler Ultimate: Robust & Stable</title>
+    <title>Scheduler Ultimate: Golden Version</title>
     <style>
         :root {
             --bg-color: #f4f4f4;
@@ -48,9 +48,11 @@
         .cal-scroll-area { display: flex; flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; }
         
         .corner-spacer { width: 60px; flex-shrink: 0; background: #fafafa; border-right: var(--border); border-bottom: 1px solid #ddd; }
+        /* Added min-width to prevent layout collapse */
         .header-col { flex: 1; border-right: var(--border); padding: 10px; min-width: 100px; transition: background 0.2s; }
         
         .time-labels-col { width: 60px; flex-shrink: 0; background: #fafafa; border-right: var(--border); }
+        /* Added min-width to prevent layout collapse */
         .grid-col { flex: 1; border-right: var(--border); position: relative; min-width: 100px; transition: background 0.2s; }
 
         .time-label { border-bottom: 1px solid #eee; font-size: 0.75rem; color: #999; text-align: right; padding-right: 8px; position: relative; top: -10px; box-sizing: border-box;}
@@ -390,7 +392,7 @@
         const helper = document.getElementById('drag-helper');
         let savedScrollPos = null;
 
-        // --- 2. HELPERS (Moved to top to prevent ReferenceError) ---
+        // --- 2. HELPERS ---
         function getLocalYMD(dateObj) {
             const y = dateObj.getFullYear();
             const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -873,8 +875,10 @@
             let barColor = '#ccc'; if(t.tags && t.tags.length > 0) barColor = getTagColor(t.tags[0]);
             div.style.borderLeftColor = barColor;
 
+            // Universal Right-Click (Fixed Bug)
+            div.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); toggleDone(t.id); return false; };
+
             if (!isAbsolute) {
-                div.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); toggleDone(t.id); return false; };
                 div.ondragover = (e) => handleTaskDragOver(e);
                 div.ondragleave = (e) => handleTaskDragLeave(e);
                 div.ondrop = (e) => handleTaskDrop(e, t.id, t.date);
@@ -1044,7 +1048,6 @@
             container.appendChild(scrollArea);
             if(savedScrollPos !== null) { scrollArea.scrollTop = savedScrollPos; savedScrollPos = null; } else { scrollArea.scrollTop = 7 * hHeight; }
         }
-
         function renderMonth(con, tasks) {
             con.className = 'grid-month'; const y = viewDate.getFullYear(), m = viewDate.getMonth(); const daysInM = new Date(y, m+1, 0).getDate(); const firstDay = new Date(y, m, 1).getDay(); const todayYMD = getLocalYMD(new Date());
             ['S','M','T','W','T','F','S'].forEach(h => { const d = document.createElement('div'); d.style.textAlign='center'; d.style.fontWeight='bold'; d.innerText=h; d.style.background='#eee'; d.style.padding='5px'; con.appendChild(d); });
