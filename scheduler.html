@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduler Ultimate: Live Time Line</title>
+    <title>Scheduler Ultimate: Robust & Stable</title>
     <style>
         :root {
             --bg-color: #f4f4f4;
@@ -41,17 +41,17 @@
         .nav-group { display: flex; gap: 10px; align-items: center; }
 
         /* --- CALENDAR CONTAINER --- */
-        #calendar-container { flex: 1; overflow: hidden; position: relative; background: #fff; width: 100%; }
+        #calendar-container { flex: 1; overflow: hidden; position: relative; background: #fff; width: 100%; display: flex; flex-direction: column; }
 
         /* --- SPLIT VIEW LAYOUT --- */
         .cal-header-row { display: flex; flex-shrink: 0; border-bottom: 2px solid #ddd; background: #f8f9fa; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .cal-scroll-area { display: flex; flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; }
         
         .corner-spacer { width: 60px; flex-shrink: 0; background: #fafafa; border-right: var(--border); border-bottom: 1px solid #ddd; }
-        .header-col { flex: 1; border-right: var(--border); padding: 10px; min-width: 0; transition: background 0.2s; }
+        .header-col { flex: 1; border-right: var(--border); padding: 10px; min-width: 100px; transition: background 0.2s; }
         
         .time-labels-col { width: 60px; flex-shrink: 0; background: #fafafa; border-right: var(--border); }
-        .grid-col { flex: 1; border-right: var(--border); position: relative; min-width: 0; transition: background 0.2s; }
+        .grid-col { flex: 1; border-right: var(--border); position: relative; min-width: 100px; transition: background 0.2s; }
 
         .time-label { border-bottom: 1px solid #eee; font-size: 0.75rem; color: #999; text-align: right; padding-right: 8px; position: relative; top: -10px; box-sizing: border-box;}
         
@@ -67,14 +67,12 @@
         /* Highlight Classes */
         .day-highlight { background-color: var(--today-bg) !important; }
         .drag-over-active { background-color: rgba(0, 123, 255, 0.1) !important; }
-        
-        /* SORTING VISUAL */
         .drag-insert-above { border-top: 4px solid var(--accent-color) !important; margin-top: -4px; transition: 0.1s; }
 
         /* --- CURRENT TIME LINE --- */
         .current-time-line {
             position: absolute; left: 0; width: 100%; height: 2px; background-color: red;
-            z-index: 5; pointer-events: none; transition: top 0.3s ease; /* Smooth move */
+            z-index: 5; pointer-events: none; transition: top 0.3s ease;
         }
         .current-time-line::before {
             content: ''; position: absolute; left: -5px; top: -3px; width: 8px; height: 8px;
@@ -90,11 +88,8 @@
 
         /* --- URGENCY DOTS --- */
         .urgency-dot {
-            display: inline-block; 
-            width: 6px; height: 6px; 
-            border-radius: 50%;
-            margin-right: 6px; flex-shrink: 0;
-            margin-top: 4px; 
+            display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+            margin-right: 6px; flex-shrink: 0; margin-top: 4px; 
         }
         .u-dot-high { background-color: #ff4d4d; border: 1px solid #c0392b; }
         .u-dot-med { background-color: #ff9f43; border: 1px solid #d35400; }
@@ -109,17 +104,16 @@
         }
         .task-card * { pointer-events: none; } 
         .task-card:active { cursor: grabbing; }
-        
         .task-absolute { position: absolute; width: calc(100% - 10px); left: 4px; background: rgba(255,255,255,0.95); box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
         .task-done { opacity: 0.6; text-decoration: line-through; background: #f9f9f9; }
         
         .tags-display { font-size: 0.7em; color: #666; margin-top: 2px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 14px; }
+        .recurring-icon { font-size: 0.9em; margin-right: 3px; color: #555; font-weight: bold; }
 
         /* --- MONTH VIEW --- */
         .grid-month { display: grid !important; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #ccc; height: 100%; width: 100%; min-height: 600px; overflow-y: auto; }
         .month-cell { background: #fff; padding: 5px; min-height: 100px; display: flex; flex-direction: column; gap: 2px; overflow: hidden; cursor: pointer; transition: background 0.2s; }
         .month-cell-header { font-weight: bold; margin-bottom: 4px; font-size: 0.9rem; pointer-events: none; }
-        
         .month-task-pill { 
             font-size: 0.7rem; padding: 2px 4px; border-radius: 2px; color: #333; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
@@ -137,7 +131,6 @@
         .agenda-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #ddd; }
         .agenda-table th, .agenda-table td { padding: 12px; border: 1px solid #eee; text-align: left; vertical-align: top; }
         .agenda-table th { background: #f8f9fa; font-weight: bold; color: #333; text-transform: uppercase; font-size: 0.8rem; }
-        
         .ag-date-col { width: 140px; border-right: 2px solid #ddd; background: #fafafa; font-weight: bold; color: #444; }
         .day-highlight .ag-date-col { background-color: rgba(255, 253, 231, 0.5); }
         .ag-task-col { font-weight: 600; color: #333; }
@@ -148,28 +141,29 @@
 
         /* --- MODAL & AUTOCOMPLETE --- */
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        #modal-content { background: #fff; padding: 20px; width: 450px; border-radius: 8px; max-height: 90vh; overflow-y: auto; }
+        #modal-content { background: #fff; padding: 20px; width: 500px; border-radius: 8px; max-height: 90vh; overflow-y: auto; }
         .row { display: flex; gap: 10px; margin-bottom: 12px; }
         .col { flex: 1; position: relative; } 
         input, select, textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
         textarea { resize: vertical; height: 60px; font-family: inherit; }
 
+        /* Recurring Options in Modal */
+        #recur-options { background: #f9f9f9; padding: 10px; border: 1px solid #eee; border-radius: 4px; display: none; margin-bottom: 15px; }
+        .recur-days-wrapper { display: flex; gap: 5px; margin-top: 5px; }
+        .recur-day-check { cursor: pointer; flex: 1; text-align: center; padding: 5px; background: #fff; border: 1px solid #ddd; border-radius: 3px; font-size: 0.75rem; user-select: none; }
+        .recur-day-check input { display: none; }
+        .recur-day-check.checked { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+
         .autocomplete-items {
             position: absolute; border: 1px solid #d4d4d4; border-bottom: none; border-top: none;
             z-index: 99; top: 100%; left: 0; right: 0; background-color: #fff;
-            max-height: 150px; overflow-y: auto; display: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-height: 150px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .autocomplete-items div {
-            padding: 8px; cursor: pointer; background-color: #fff; border-bottom: 1px solid #d4d4d4;
-        }
-        .autocomplete-items div:hover, .autocomplete-active {
-            background-color: #e9e9e9;
-        }
+        .autocomplete-items div { padding: 8px; cursor: pointer; background-color: #fff; border-bottom: 1px solid #d4d4d4; }
+        .autocomplete-items div:hover, .autocomplete-active { background-color: #e9e9e9; }
 
         /* --- PRINT STYLES --- */
         #print-notes-container { display: none; }
-        
         .print-grid-wrapper { display: grid; border: 1px solid #000; }
         .print-grid-header-cell { border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px; text-align: center; font-weight: bold; background: #eee; }
         .print-grid-body-cell { border-right: 1px solid #000; position: relative; }
@@ -179,44 +173,25 @@
             @page { size: portrait; margin: 0.5cm; }
             body { height: auto; overflow: visible; background: white; display: block; }
             #sidebar, #header-bar, #modal, #drag-helper, .current-time-line { display: none !important; }
-            
             #main-view { display: block; overflow: visible; height: auto; width: 100%; }
             #calendar-container { overflow: visible; height: auto; display: block; } 
-            
             .cal-header-row, .cal-scroll-area { display: none; }
-
             .task-card { 
-                font-size: 0.7rem !important; 
-                padding: 1px 3px !important; 
-                min-height: 18px !important; 
-                border-left-width: 3px !important;
-                border: 1px solid #333;
-                box-shadow: none;
-                break-inside: avoid;
+                font-size: 0.7rem !important; padding: 1px 3px !important; min-height: 18px !important; 
+                border-left-width: 3px !important; border: 1px solid #333; box-shadow: none; break-inside: avoid;
             }
             .urgency-dot { margin-right: 4px; width: 5px; height: 5px; margin-top: 3px; }
-            
             .grid-month { display: grid !important; height: auto !important; grid-template-rows: repeat(5, 100px); border: 1px solid #000; gap: 0; background: #000; }
             .month-cell { height: auto !important; border: 1px solid #eee; background: #fff !important; }
             .month-task-pill { font-size: 0.7rem !important; padding: 1px 3px !important; }
-
             .print-grid-header-cell, .print-day-header { font-size: 0.85rem !important; padding: 2px !important; }
             .time-label { font-size: 0.65rem !important; }
-
             .agenda-container { padding: 0; }
             .agenda-table { border: 2px solid #000; }
-            .agenda-table th, .agenda-table td { 
-                border: 1px solid #666; 
-                padding: 4px 6px !important; 
-                font-size: 0.75rem !important;
-            }
+            .agenda-table th, .agenda-table td { border: 1px solid #666; padding: 4px 6px !important; font-size: 0.75rem !important; }
             .ag-date-col { width: 100px !important; }
-            
             #print-notes-container { display: block; width: 100%; border-top: 2px solid #333; margin-top: 20px; padding-top: 10px; font-size: 0.8rem !important; page-break-inside: avoid; clear: both; }
-            .print-note-header { font-weight: bold; margin-bottom: 5px; text-transform: uppercase; font-size: 0.9rem !important; }
-            
             .day-highlight { background-color: #fffde7 !important; -webkit-print-color-adjust: exact; }
-            
             -webkit-print-color-adjust: exact;
         }
     </style>
@@ -256,8 +231,8 @@
         <div class="control-group">
             <label>Data Management</label>
             <div style="display:flex; justify-content:space-between;">
-                <button class="btn-secondary" onclick="exportData()">&#8595; Export JSON</button>
-                <button class="btn-secondary" onclick="document.getElementById('file-import').click()">&#8593; Import JSON</button>
+                <button id="btn-export" class="btn-secondary btn-backup-clean" onclick="exportData()" style="width: 48%">&#8595; Backup Data</button>
+                <button class="btn-secondary" onclick="document.getElementById('file-import').click()" style="width: 48%">&#8593; Import Data</button>
             </div>
         </div>
 
@@ -268,7 +243,9 @@
         <div id="header-bar">
             <div class="nav-group">
                 <button onclick="changeDate(-1)" style="width:auto">&lt; Prev</button>
+                <button onclick="shiftDay(-1)" style="width:auto; padding: 5px 10px; font-weight:bold;">&lsaquo;</button>
                 <button onclick="goToToday()" style="width:auto; font-weight:bold; background: #28a745; color: white;">Today</button>
+                <button onclick="shiftDay(1)" style="width:auto; padding: 5px 10px; font-weight:bold;">&rsaquo;</button>
                 <button onclick="changeDate(1)" style="width:auto">Next &gt;</button>
             </div>
             <div id="current-date-display">Today</div>
@@ -286,6 +263,7 @@
         <div id="modal-content">
             <h2 id="m-title" style="margin-top:0">Add Item</h2>
             <input type="hidden" id="m-id">
+            <input type="hidden" id="m-series-id">
             <div class="row">
                 <div class="col">
                     <label>Description</label>
@@ -315,6 +293,43 @@
                     </select>
                 </div>
             </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display:flex; align-items:center; cursor:pointer;">
+                    <input type="checkbox" id="m-recur-check" style="width:auto; margin-right:8px;" onchange="toggleRecurOptions()"> 
+                    Repeats / Recurring
+                </label>
+                <div id="recur-options">
+                    <div class="row">
+                        <div class="col">
+                            <label>Frequency</label>
+                            <select id="r-freq" onchange="toggleRecurDayChecks()">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label>Interval (Every X)</label>
+                            <input type="number" id="r-interval" value="1" min="1">
+                        </div>
+                    </div>
+                    <div id="r-days-container" style="display:none;">
+                        <label>Repeats On:</label>
+                        <div class="recur-days-wrapper">
+                            <div class="recur-day-check" onclick="toggleDayCheck(this)" data-day="0">Sun</div>
+                            <div class="recur-day-check" onclick="toggleDayCheck(this)" data-day="1">Mon</div>
+                            <div class="recur-day-check" onclick="toggleDayCheck(this)" data-day="2">Tue</div>
+                            <div class="recur-day-check" onclick="toggleDayCheck(this)" data-day="3">Wed</div>
+                            <div class="recur-day-check" onclick="toggleDayCheck(this)" data-day="4">Thu</div>
+                            <div class="recur-day-check" onclick="toggleDayCheck(this)" data-day="5">Fri</div>
+                            <div class="recur-day-check" onclick="toggleDayCheck(this)" data-day="6">Sat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col">
                     <label>Tags</label>
@@ -349,7 +364,7 @@
                 </label>
             </div>
             <div class="row" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px; justify-content: flex-end;">
-                <button onclick="deleteTask()" style="background:#ff4d4d; color:white; width:auto; margin-right:auto;">Delete</button>
+                <button id="btn-delete" onclick="handleDeleteClick()" style="background:#ff4d4d; color:white; width:auto; margin-right:auto;">Delete</button>
                 <button onclick="closeModal()" style="width:auto; margin-right:10px; background:#ddd;">Cancel</button>
                 <button onclick="saveTask()" style="background:var(--accent-color); color:white; width:auto;">Save Item</button>
             </div>
@@ -357,31 +372,25 @@
     </div>
 
     <script>
-        // --- CONFIG & STATE ---
+        // --- 1. CONFIG & STATE ---
         let tasks = [];
+        let recurringRules = []; 
         let tagsSet = new Set();
         let viewDate = new Date();
         let currentView = 'week';
+        let unsavedChanges = false;
         
         let isPrintMode = false;
         const SCREEN_HOUR_HEIGHT = 60;
         const PRINT_HOUR_HEIGHT = 40;
         const PRINT_START_HOUR = 6;
         const PRINT_END_HOUR = 22;
+        const LOOKAHEAD_DAYS = 60;
 
         const helper = document.getElementById('drag-helper');
         let savedScrollPos = null;
 
-        try {
-            const savedTasks = localStorage.getItem('ult_tasks');
-            if (savedTasks) tasks = JSON.parse(savedTasks);
-            const savedNotes = localStorage.getItem('ult_notes');
-            if (savedNotes) document.getElementById('sidebar-notes').value = savedNotes;
-        } catch (e) { console.error("Storage Error", e); }
-
-        // --- DATA SANITIZER ---
-        tasks.forEach((t, i) => { if(t.order === undefined) t.order = i * 1000; });
-
+        // --- 2. HELPERS (Moved to top to prevent ReferenceError) ---
         function getLocalYMD(dateObj) {
             const y = dateObj.getFullYear();
             const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -389,27 +398,160 @@
             return `${y}-${m}-${d}`;
         }
 
-        // --- COLOR HASH ---
         function getTagColor(tagName) {
             if (!tagName) return '#ccc';
             let hash = 0;
-            for (let i = 0; i < tagName.length; i++) {
-                hash = tagName.charCodeAt(i) + ((hash << 5) - hash);
-            }
+            for (let i = 0; i < tagName.length; i++) { hash = tagName.charCodeAt(i) + ((hash << 5) - hash); }
             const h = Math.abs(hash % 360);
             return `hsl(${h}, 65%, 45%)`;
         }
 
-        // --- TOGGLE DONE (Right Click) ---
         function toggleDone(id) {
             const t = tasks.find(x => x.id == id);
-            if(t) {
-                t.done = !t.done;
-                saveData(true);
+            if(t) { t.done = !t.done; saveData(true); }
+        }
+
+        function handleDragStart(e, id) {
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', id);
+        }
+
+        // --- 3. INIT STORAGE ---
+        try {
+            const savedTasks = localStorage.getItem('ult_tasks');
+            if (savedTasks) tasks = JSON.parse(savedTasks) || [];
+            
+            const savedRules = localStorage.getItem('ult_rules');
+            if (savedRules) recurringRules = JSON.parse(savedRules) || [];
+            
+            const savedNotes = localStorage.getItem('ult_notes');
+            if (savedNotes) document.getElementById('sidebar-notes').value = savedNotes;
+        } catch (e) { 
+            console.error("Storage Error", e); 
+            tasks = [];
+            recurringRules = [];
+        }
+
+        // --- 4. UNSAVED WARNING ---
+        window.addEventListener('beforeunload', function (e) {
+            if (unsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        function setUnsaved(status) {
+            unsavedChanges = status;
+            const btn = document.getElementById('btn-export');
+            if (status) {
+                btn.classList.remove('btn-backup-clean');
+                btn.classList.add('btn-backup-dirty');
+                btn.innerText = "⚠️ Backup Needed";
+            } else {
+                btn.classList.remove('btn-backup-dirty');
+                btn.classList.add('btn-backup-clean');
+                btn.innerText = "⬇ Backup Data";
             }
         }
 
-        // --- AUTOCOMPLETE LOGIC ---
+        // --- 5. RECURRENCE ENGINE ---
+        function updateRecurringTasks() {
+            let changesMade = false;
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const horizon = new Date(today);
+            horizon.setDate(horizon.getDate() + LOOKAHEAD_DAYS);
+
+            recurringRules.forEach(rule => {
+                if (rule.endDate && rule.endDate < getLocalYMD(today)) return;
+
+                const existingInstances = tasks.filter(t => t.recurringId === rule.id);
+                
+                let startScanDate = new Date(today);
+                if (existingInstances.length > 0) {
+                    const maxDateStr = existingInstances.reduce((max, t) => t.date > max ? t.date : max, existingInstances[0].date);
+                    const lastDate = new Date(maxDateStr + 'T00:00:00');
+                    startScanDate = new Date(lastDate);
+                    startScanDate.setDate(startScanDate.getDate() + 1);
+                } else {
+                    const ruleStart = new Date(rule.startDate + 'T00:00:00');
+                    startScanDate = (ruleStart > today) ? ruleStart : today;
+                }
+
+                let cursor = new Date(startScanDate);
+                let safety = 0;
+                
+                const ruleOrigin = new Date(rule.startDate + 'T00:00:00');
+                const ruleEnd = rule.endDate ? new Date(rule.endDate + 'T00:00:00') : null;
+
+                while (cursor <= horizon && safety < 1000) {
+                    safety++;
+                    const cStr = getLocalYMD(cursor);
+
+                    if (ruleEnd && cursor > ruleEnd) break;
+                    
+                    if (doesRuleMatchDate(rule, cursor, ruleOrigin)) {
+                        const uniqueOrder = Date.now() + Math.floor(Math.random() * 1000) + safety;
+                        const newTask = {
+                            id: Date.now() + Math.floor(Math.random()*100000) + safety, 
+                            desc: rule.desc,
+                            date: cStr,
+                            startTime: rule.startTime,
+                            durVal: rule.durVal,
+                            durUnit: rule.durUnit,
+                            tags: rule.tags,
+                            prio: rule.prio,
+                            urgency: rule.urgency,
+                            notes: rule.notes,
+                            done: false,
+                            floated: false,
+                            recurringId: rule.id,
+                            order: uniqueOrder 
+                        };
+                        tasks.push(newTask);
+                        changesMade = true;
+                    }
+                    cursor.setDate(cursor.getDate() + 1);
+                }
+            });
+
+            if (changesMade) {
+                saveData();
+                document.getElementById('status-msg').innerText = "Schedule updated with recurring items.";
+            }
+        }
+
+        function doesRuleMatchDate(rule, dateObj, originObj) {
+            const diffTime = dateObj - originObj;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays < 0) return false;
+
+            if (rule.freq === 'daily') return (diffDays % rule.interval === 0);
+            if (rule.freq === 'weekly') {
+                const dayOfWeek = dateObj.getDay(); 
+                if (!rule.byDays.includes(dayOfWeek)) return false;
+                const originDay = originObj.getDay();
+                const originSunday = new Date(originObj); originSunday.setDate(originSunday.getDate() - originDay);
+                const curDay = dateObj.getDay();
+                const curSunday = new Date(dateObj); curSunday.setDate(curSunday.getDate() - curDay);
+                const diffWeeks = Math.round((curSunday - originSunday) / (1000 * 60 * 60 * 24 * 7));
+                return (diffWeeks % rule.interval === 0);
+            }
+            if (rule.freq === 'monthly') {
+                if (dateObj.getDate() !== originObj.getDate()) return false;
+                const monthDiff = (dateObj.getFullYear() - originObj.getFullYear()) * 12 + (dateObj.getMonth() - originObj.getMonth());
+                return (monthDiff % rule.interval === 0);
+            }
+            if (rule.freq === 'yearly') {
+                 if (dateObj.getDate() !== originObj.getDate()) return false;
+                 if (dateObj.getMonth() !== originObj.getMonth()) return false;
+                 const yearDiff = dateObj.getFullYear() - originObj.getFullYear();
+                 return (yearDiff % rule.interval === 0);
+            }
+            return false;
+        }
+
+        // --- 6. AUTOCOMPLETE LOGIC ---
         const tagsInput = document.getElementById('m-tags');
         const suggestionsDiv = document.getElementById('tag-suggestions');
 
@@ -417,21 +559,16 @@
             const val = this.value;
             const parts = val.split(',');
             const currentFragment = parts[parts.length - 1].trim().toLowerCase();
-            
             closeAllLists();
             if (!currentFragment) return;
-
             const matches = Array.from(tagsSet).filter(t => t.toLowerCase().startsWith(currentFragment));
             if (matches.length === 0) return;
-
             suggestionsDiv.style.display = 'block';
-            
             matches.forEach(tag => {
                 const div = document.createElement('div');
                 div.innerText = tag;
                 div.addEventListener('click', function() {
-                    parts.pop();
-                    parts.push(tag);
+                    parts.pop(); parts.push(tag);
                     tagsInput.value = parts.join(', ') + ', ';
                     closeAllLists();
                     tagsInput.focus();
@@ -443,729 +580,52 @@
         tagsInput.addEventListener('keydown', function(e) {
             if ((e.key === 'Tab' || e.key === 'Enter') && suggestionsDiv.style.display === 'block') {
                 const first = suggestionsDiv.querySelector('div');
-                if (first) {
-                    e.preventDefault();
-                    first.click();
-                }
+                if (first) { e.preventDefault(); first.click(); }
             }
         });
 
         function closeAllLists() {
-            suggestionsDiv.innerHTML = '';
-            suggestionsDiv.style.display = 'none';
+            suggestionsDiv.innerHTML = ''; suggestionsDiv.style.display = 'none';
         }
-        
-        document.addEventListener('click', function(e) {
-            if (e.target !== tagsInput) closeAllLists();
-        });
+        document.addEventListener('click', function(e) { if (e.target !== tagsInput) closeAllLists(); });
 
-
-        // --- INIT ---
-        runSlideLogic();
-        updateTagList();
-        render();
-
-        // --- AUTO UPDATE TIME LINE ---
-        setInterval(function() {
-            const line = document.querySelector('.current-time-line');
-            if(line) {
-                const now = new Date();
-                let h = now.getHours();
-                let m = now.getMinutes();
-                m = Math.round(m / 15) * 15;
-                if (m === 60) { m = 0; h = (h + 1) % 24; }
-                const topPx = (h * 60) + m; 
-                line.style.top = topPx + 'px';
-            }
-        }, 60000); // Check every 60 seconds
-
+        // --- 7. KEYBOARD SHORTCUTS ---
         document.addEventListener('keydown', (e) => {
-            const isModalOpen = document.getElementById('modal').style.display === 'flex';
+            const modal = document.getElementById('modal');
+            const isModalOpen = modal.style.display === 'flex';
             const tag = document.activeElement.tagName;
             const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(tag);
 
-            if (e.key.toLowerCase() === 'n' && !isInput && !isModalOpen) {
-                e.preventDefault();
-                openModal();
-            }
+            if (e.key.toLowerCase() === 'n' && !isInput && !isModalOpen) { e.preventDefault(); openModal(); }
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && isModalOpen) {
                 if (suggestionsDiv.style.display !== 'block') saveTask();
             }
-            if (e.key === 'Escape' && isModalOpen) {
-                closeModal();
-            }
+            if (e.key === 'Escape' && isModalOpen) closeModal();
         });
 
-        // --- EXPORT / IMPORT LOGIC ---
-        function exportData() {
-            const dataStr = JSON.stringify({
-                tasks: tasks,
-                notes: document.getElementById('sidebar-notes').value,
-                exportedAt: new Date().toISOString()
-            }, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            const link = document.createElement('a');
-            link.setAttribute('href', dataUri);
-            link.setAttribute('download', 'scheduler_backup.json');
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+        // --- 8. MODAL HANDLERS ---
+        function toggleRecurOptions() {
+            const chk = document.getElementById('m-recur-check');
+            document.getElementById('recur-options').style.display = chk.checked ? 'block' : 'none';
         }
-
-        function importData(input) {
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if(data.tasks && Array.isArray(data.tasks)) {
-                        tasks = data.tasks;
-                        localStorage.setItem('ult_tasks', JSON.stringify(tasks));
-                    }
-                    if(data.notes !== undefined) {
-                        document.getElementById('sidebar-notes').value = data.notes;
-                        localStorage.setItem('ult_notes', data.notes);
-                    }
-                    alert("Data imported successfully.");
-                    updateTagList();
-                    render();
-                } catch(err) {
-                    alert("Error parsing file.");
-                }
-            };
-            reader.readAsText(file);
+        function toggleRecurDayChecks() {
+            const freq = document.getElementById('r-freq').value;
+            document.getElementById('r-days-container').style.display = freq === 'weekly' ? 'block' : 'none';
         }
-
-        // --- DRAG HANDLERS ---
-        function handleDragStart(e, id) {
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', id);
-        }
-        
-        function handleHeaderDrop(e, targetDateStr) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('drag-over-active');
-            helper.style.display = 'none'; 
-            
-            const id = e.dataTransfer.getData('text/plain');
-            if (!id) return;
-            const tIndex = tasks.findIndex(t => t.id == id);
-            if (tIndex > -1) {
-                const task = tasks[tIndex];
-                task.startTime = ''; 
-                if (task.date !== targetDateStr) {
-                    task.date = targetDateStr;
-                    const dayTasks = tasks.filter(t => t.date === targetDateStr);
-                    const maxOrder = dayTasks.reduce((acc, curr) => Math.max(acc, curr.order || 0), 0);
-                    task.order = maxOrder + 1000; 
-                }
-                saveData(true); 
-            }
-        }
-
-        function handleGridDragOver(e, dateStr) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            e.currentTarget.classList.add('drag-over-active');
-            const rect = e.currentTarget.getBoundingClientRect();
-            const offsetY = e.clientY - rect.top;
-            const hHeight = isPrintMode ? PRINT_HOUR_HEIGHT : SCREEN_HOUR_HEIGHT;
-            const startHour = isPrintMode ? PRINT_START_HOUR : 0;
-            const totalMinutes = (offsetY / hHeight) * 60;
-            let hour = Math.floor(totalMinutes / 60) + startHour;
-            let minute = Math.floor((totalMinutes % 60) / 15) * 15; 
-            if (minute === 60) { minute = 0; hour++; }
-            if (hour > 23) hour = 23;
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            const dispHour = hour % 12 || 12;
-            const dispMin = minute.toString().padStart(2, '0');
-            helper.style.display = 'block';
-            helper.style.left = (e.pageX + 15) + 'px';
-            helper.style.top = (e.pageY + 15) + 'px';
-            helper.innerText = `Move to:\n${dateStr}\n${dispHour}:${dispMin} ${ampm}`;
-        }
-
-        function handleGridDrop(e, targetDateStr) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('drag-over-active');
-            helper.style.display = 'none'; 
-            const id = e.dataTransfer.getData('text/plain');
-            if (!id) return;
-            const rect = e.currentTarget.getBoundingClientRect();
-            const offsetY = e.clientY - rect.top;
-            const hHeight = isPrintMode ? PRINT_HOUR_HEIGHT : SCREEN_HOUR_HEIGHT;
-            const startHour = isPrintMode ? PRINT_START_HOUR : 0;
-            const totalMinutes = (offsetY / hHeight) * 60;
-            let hour = Math.floor(totalMinutes / 60) + startHour;
-            let minute = Math.floor((totalMinutes % 60) / 15) * 15;
-            if (minute === 60) { minute = 0; hour++; }
-            if (hour > 23) hour = 23;
-            const timeStr = `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`;
-            const tIndex = tasks.findIndex(t => t.id == id);
-            if (tIndex > -1) {
-                const task = tasks[tIndex];
-                task.date = targetDateStr;
-                task.startTime = timeStr; 
-                task.floated = false;     
-                saveData(true); 
-            }
-        }
-
-        function handleDragLeave(e) {
-            e.currentTarget.classList.remove('drag-over-active');
-            helper.style.display = 'none';
-        }
-
-        // --- TASK SORTING LOGIC ---
-        function handleTaskDrop(e, targetId, targetDateStr) {
-            e.preventDefault(); e.stopPropagation(); 
-            e.currentTarget.classList.remove('drag-insert-above');
-            helper.style.display = 'none';
-
-            const draggedId = e.dataTransfer.getData('text/plain');
-            if (!draggedId || draggedId == targetId) return;
-
-            const draggedIdx = tasks.findIndex(t => t.id == draggedId);
-            const targetIdx = tasks.findIndex(t => t.id == targetId);
-            
-            if (draggedIdx > -1 && targetIdx > -1) {
-                const draggedTask = tasks[draggedIdx];
-                const targetTask = tasks[targetIdx];
-                
-                // FORCE TODO CONVERSION
-                draggedTask.startTime = '';
-                draggedTask.floated = true;
-                draggedTask.date = targetDateStr;
-
-                // 1. Get ALL tasks for this day (regardless of type)
-                // Filter specifically for "Todo" type items to match the visual list
-                let dayTodos = tasks.filter(t => t.date === targetDateStr && !t.startTime);
-                
-                // 2. Sort by the SAME logic as the Render engine
-                // Completed items first, then by Order
-                dayTodos.sort((a,b) => {
-                    if(a.done && !b.done) return 1; 
-                    if(!a.done && b.done) return -1;
-                    return (a.order||0) - (b.order||0);
-                });
-
-                // 3. Remove dragged item from this local list to prepare for insertion
-                dayTodos = dayTodos.filter(t => t.id != draggedId);
-
-                // 4. Find the index of the target
-                const localTargetIdx = dayTodos.findIndex(t => t.id == targetId);
-
-                if (localTargetIdx !== -1) {
-                    // 5. Insert Dragged Item BEFORE target
-                    dayTodos.splice(localTargetIdx, 0, draggedTask);
-                    
-                    // 6. Re-apply order to these specific items
-                    dayTodos.forEach((t, i) => { 
-                        t.order = i * 1000; 
-                    });
-                    
-                    saveData(true);
-                }
-            }
-        }
-
-        function handleTaskDragOver(e) {
-            e.preventDefault(); e.stopPropagation();
-            e.dataTransfer.dropEffect = 'move';
-            e.currentTarget.classList.add('drag-insert-above');
-            helper.style.display = 'none'; 
-        }
-        
-        function handleTaskDragLeave(e) {
-            e.preventDefault(); e.stopPropagation();
-            e.currentTarget.classList.remove('drag-insert-above');
-        }
-
-        // --- LOGIC ---
-        function runSlideLogic() {
-            let count = 0;
-            const nowStr = getLocalYMD(new Date()); 
-            tasks.forEach(t => {
-                if (!t.done) {
-                    if (t.date < nowStr) {
-                        t.date = nowStr;
-                        t.startTime = ''; 
-                        t.floated = true;
-                        count++;
-                    }
-                }
-            });
-            if (count > 0) saveData();
-            document.getElementById('status-msg').innerText = count > 0 ? `${count} tasks rolled forward.` : "All up to date.";
-        }
-
-        function saveNotes() { localStorage.setItem('ult_notes', document.getElementById('sidebar-notes').value); }
-
-        function handlePrint() {
-            isPrintMode = true;
-            document.getElementById('print-notes-content').innerText = document.getElementById('sidebar-notes').value;
-            render(); 
-            setTimeout(() => { window.print(); isPrintMode = false; render(); }, 500);
-        }
-
-        function goToToday() { viewDate = new Date(); render(); }
-
-        // --- RENDER ENGINE ---
-        function render() {
-            const container = document.getElementById('calendar-container');
-            container.innerHTML = '';
-            container.removeAttribute('style');
-            container.className = '';
-
-            const filterTag = document.getElementById('tag-filter').value.toLowerCase();
-            const filteredTasks = tasks.filter(t => {
-                if(!filterTag) return true;
-                return t.tags && t.tags.some(tag => tag.toLowerCase() === filterTag);
-            });
-
-            const options = { month: 'long', year: 'numeric' };
-            if (currentView === 'day') options.day = 'numeric';
-            document.getElementById('current-date-display').innerText = viewDate.toLocaleDateString('en-US', options);
-
-            const sortedTasks = filteredTasks.sort((a,b) => {
-                if(a.done && !b.done) return 1; 
-                if(!a.done && b.done) return -1;
-                if (!a.startTime && !b.startTime) return (a.order || 0) - (b.order || 0);
-                return b.prio - a.prio;
-            });
-
-            if (['day', '4day', 'week'].includes(currentView)) {
-                container.style.display = 'flex';
-                container.style.flexDirection = 'column';
-                let dayCount = currentView === 'day' ? 1 : (currentView === '4day' ? 4 : 7);
-                renderTimeGrid(container, dayCount, sortedTasks);
-            } else if (currentView === 'month') {
-                renderMonth(container, sortedTasks);
-            } else if (currentView === 'year') {
-                renderYear(container, sortedTasks);
-            } else if (currentView === 'agenda') {
-                container.style.display = 'block';
-                container.style.overflowY = 'auto';
-                renderAgenda(container, filteredTasks);
-            }
-        }
-
-        function renderTimeGrid(container, days, displayTasks) {
-            const todayYMD = getLocalYMD(new Date());
-            let start = new Date(viewDate);
-            if (days === 7) start.setDate(start.getDate() - start.getDay());
-            
-            const startH = isPrintMode ? PRINT_START_HOUR : 0;
-            const endH = isPrintMode ? PRINT_END_HOUR : 24;
-            const hHeight = isPrintMode ? PRINT_HOUR_HEIGHT : SCREEN_HOUR_HEIGHT;
-
-            if (isPrintMode) {
-                container.style.display = 'block'; 
-                const wrapper = document.createElement('div');
-                wrapper.className = 'print-grid-wrapper';
-                wrapper.style.gridTemplateColumns = `60px repeat(${days}, 1fr)`;
-
-                const corner = document.createElement('div');
-                corner.className = 'print-grid-header-cell';
-                corner.style.gridColumn = '1'; corner.style.gridRow = '1';
-                wrapper.appendChild(corner);
-
-                const timeCol = document.createElement('div');
-                timeCol.className = 'print-time-col';
-                timeCol.style.gridColumn = '1'; timeCol.style.gridRow = '2';
-                for(let i=startH; i<endH; i++) {
-                    const label = document.createElement('div');
-                    label.className = 'time-label'; 
-                    label.style.height = hHeight + 'px'; 
-                    label.innerText = i + ":00";
-                    timeCol.appendChild(label);
-                }
-                wrapper.appendChild(timeCol);
-
-                for(let i=0; i<days; i++) {
-                    let d = new Date(start);
-                    d.setDate(d.getDate() + i);
-                    const dString = getLocalYMD(d);
-                    const colIdx = i + 2; 
-
-                    const header = document.createElement('div');
-                    header.className = 'print-grid-header-cell';
-                    header.style.gridColumn = String(colIdx); header.style.gridRow = '1';
-                    header.innerHTML = d.toLocaleDateString('en-US', {weekday:'short', day:'numeric'});
-                    
-                    const bucket = document.createElement('div');
-                    bucket.className = 'floating-bucket';
-                    bucket.style.padding = '5px';
-                    let todoTasks = displayTasks.filter(t => t.date === dString && !t.startTime);
-                    todoTasks.forEach(t => bucket.appendChild(createTaskElement(t, false, hHeight)));
-                    header.appendChild(bucket);
-                    wrapper.appendChild(header);
-
-                    const body = document.createElement('div');
-                    body.className = 'print-grid-body-cell';
-                    body.style.gridColumn = String(colIdx); body.style.gridRow = '2';
-                    body.style.height = ((endH - startH) * hHeight) + 'px';
-                    
-                    const gridBg = document.createElement('div');
-                    gridBg.style.position='absolute'; gridBg.style.width='100%'; gridBg.style.zIndex='0';
-                    for(let h=startH; h<endH; h++){
-                        const slot = document.createElement('div');
-                        slot.style.height = hHeight + 'px';
-                        slot.style.borderBottom = '1px solid #eee';
-                        gridBg.appendChild(slot);
-                    }
-                    body.appendChild(gridBg);
-
-                    let timedTasks = displayTasks.filter(t => t.date === dString && t.startTime);
-                    timedTasks.forEach(t => {
-                        const [h, m] = t.startTime.split(':').map(Number);
-                        if(h >= startH && h < endH) {
-                            const el = createTaskElement(t, true, hHeight);
-                            const relativeH = h - startH;
-                            const topPx = (relativeH * hHeight) + (m * (hHeight/60));
-                            let durMins = t.durUnit === 'hour' ? (t.durVal * 60) : t.durVal;
-                            if(!durMins) durMins = 30;
-                            const heightPx = durMins * (hHeight/60);
-                            el.style.top = topPx + 'px'; el.style.height = heightPx + 'px'; 
-                            el.style.zIndex = '1';
-                            body.appendChild(el);
-                        }
-                    });
-                    wrapper.appendChild(body);
-                }
-                container.appendChild(wrapper);
-                return; 
-            }
-
-            const headerRow = document.createElement('div');
-            headerRow.className = 'cal-header-row';
-            const corner = document.createElement('div');
-            corner.className = 'corner-spacer';
-            headerRow.appendChild(corner);
-
-            for(let i=0; i<days; i++) {
-                let d = new Date(start);
-                d.setDate(d.getDate() + i);
-                const dString = getLocalYMD(d);
-                const isToday = dString === todayYMD;
-
-                const col = document.createElement('div');
-                col.className = 'header-col';
-                if(isToday) col.classList.add('day-highlight');
-
-                col.ondragover = (e) => { e.preventDefault(); e.currentTarget.classList.add('drag-over-active'); helper.style.display='none'; };
-                col.ondragleave = (e) => e.currentTarget.classList.remove('drag-over-active');
-                col.ondrop = (e) => handleHeaderDrop(e, dString);
-
-                const title = document.createElement('div');
-                title.className = `day-title ${isToday?'today':''}`;
-                title.innerText = d.toLocaleDateString('en-US', {weekday:'short', day:'numeric'});
-                title.onclick = () => { viewDate = new Date(d); setView('day'); };
-                col.appendChild(title);
-                
-                const bucket = document.createElement('div');
-                bucket.className = 'floating-bucket';
-                
-                let dayTasks = displayTasks.filter(t => t.date === dString && !t.startTime);
-                dayTasks.forEach(t => {
-                    bucket.appendChild(createTaskElement(t, false, hHeight));
-                });
-                col.appendChild(bucket);
-                headerRow.appendChild(col);
-            }
-            container.appendChild(headerRow);
-
-            const scrollArea = document.createElement('div');
-            scrollArea.className = 'cal-scroll-area';
-            
-            const timeCol = document.createElement('div');
-            timeCol.className = 'time-labels-col';
-            timeCol.style.height = ((endH - startH) * hHeight) + 'px';
-            
-            for(let i=startH; i<endH; i++) {
-                const label = document.createElement('div');
-                label.className = 'time-label'; 
-                label.style.height = hHeight + 'px'; 
-                label.innerText = i + ":00";
-                timeCol.appendChild(label);
-            }
-            scrollArea.appendChild(timeCol);
-
-            let minHour = 7;
-            for(let i=0; i<days; i++) {
-                let d = new Date(start);
-                d.setDate(d.getDate() + i);
-                const dString = getLocalYMD(d);
-                let timedTasks = displayTasks.filter(t => t.date === dString && t.startTime);
-                timedTasks.forEach(t => {
-                    const h = parseInt(t.startTime.split(':')[0]);
-                    if(h < minHour) minHour = h;
-                });
-            }
-            
-            for(let i=0; i<days; i++) {
-                let d = new Date(start);
-                d.setDate(d.getDate() + i);
-                const dString = getLocalYMD(d);
-                const isToday = dString === todayYMD;
-
-                const col = document.createElement('div');
-                col.className = 'grid-col';
-                col.style.height = ((endH - startH) * hHeight) + 'px';
-                if(isToday) col.classList.add('day-highlight');
-
-                col.ondragover = (e) => handleGridDragOver(e, dString);
-                col.ondragleave = (e) => handleDragLeave(e);
-                col.ondrop = (e) => handleGridDrop(e, dString);
-
-                const gridArea = document.createElement('div');
-                gridArea.className = 'grid-area';
-                
-                for(let h=startH; h<endH; h++){
-                    const slot = document.createElement('div');
-                    slot.className = 'time-slot-bg'; slot.style.height = hHeight + 'px'; gridArea.appendChild(slot);
-                }
-
-                // CURRENT TIME LINE
-                if (isToday && !isPrintMode) {
-                    const now = new Date();
-                    let h = now.getHours();
-                    let m = now.getMinutes();
-                    m = Math.round(m / 15) * 15;
-                    if (m === 60) { m = 0; h = (h + 1) % 24; }
-                    if(h >= startH && h < endH) {
-                         const totalSnappedMinutes = (h - startH) * 60 + m;
-                         const topPx = totalSnappedMinutes * (hHeight / 60);
-                         const line = document.createElement('div');
-                         line.className = 'current-time-line';
-                         line.style.top = topPx + 'px';
-                         gridArea.appendChild(line);
-                    }
-                }
-
-                let timedTasks = displayTasks.filter(t => t.date === dString && t.startTime);
-                timedTasks.forEach(t => {
-                    const [h, m] = t.startTime.split(':').map(Number);
-                    if(h >= startH && h < endH) {
-                        const el = createTaskElement(t, true, hHeight);
-                        const relativeH = h - startH;
-                        const topPx = (relativeH * hHeight) + (m * (hHeight/60));
-                        let durMins = t.durUnit === 'hour' ? (t.durVal * 60) : t.durVal;
-                        if(!durMins) durMins = 30;
-                        const heightPx = durMins * (hHeight/60);
-                        el.style.top = topPx + 'px'; el.style.height = heightPx + 'px'; gridArea.appendChild(el);
-                    }
-                });
-                col.appendChild(gridArea);
-                scrollArea.appendChild(col);
-            }
-            container.appendChild(scrollArea);
-
-            if(savedScrollPos !== null) {
-                scrollArea.scrollTop = savedScrollPos;
-                savedScrollPos = null; 
-            } else {
-                scrollArea.scrollTop = minHour * hHeight;
-            }
-        }
-
-        function createTaskElement(t, isAbsolute, rowHeight) {
-            const div = document.createElement('div');
-            div.className = `task-card u-${t.urgency} ${isAbsolute ? 'task-absolute' : ''} ${t.done ? 'task-done' : ''}`;
-            div.draggable = true;
-            div.ondragstart = (e) => handleDragStart(e, t.id);
-
-            // Set Border Color from Tag
-            let barColor = '#ccc';
-            if(t.tags && t.tags.length > 0) barColor = getTagColor(t.tags[0]);
-            div.style.borderLeftColor = barColor;
-
-            if (!isAbsolute) {
-                // Add Context Menu
-                div.oncontextmenu = (e) => { 
-                    e.preventDefault(); 
-                    e.stopPropagation(); // prevent bubbling to container
-                    toggleDone(t.id); 
-                    return false; 
-                };
-
-                div.ondragover = (e) => handleTaskDragOver(e);
-                div.ondragleave = (e) => handleTaskDragLeave(e);
-                div.ondrop = (e) => handleTaskDrop(e, t.id, t.date);
-            }
-
-            if (!isAbsolute) {
-                let mins = t.durUnit === 'hour' ? (t.durVal * 60) : (t.durVal || 30);
-                const scale = isPrintMode ? 0.3 : 0.5; 
-                let h = Math.max(24, Math.min(96, mins * scale));
-                div.style.height = h + 'px';
-            }
-
-            let tagsHtml = t.tags && t.tags.length ? `<div class="tags-display">${t.tags.join(', ')}</div>` : '';
-            
-            const dotClass = t.urgency === 'high' ? 'u-dot-high' : (t.urgency === 'med' ? 'u-dot-med' : 'u-dot-low');
-            const dotHtml = `<span class="urgency-dot ${dotClass}"></span>`;
-            
-            div.innerHTML = `<div style="display:flex; align-items:flex-start;">${dotHtml}<strong>${t.desc}</strong></div>${tagsHtml}`;
-            div.title = `Notes: ${t.notes || ''}`;
-            div.onclick = (e) => { e.stopPropagation(); openModal(t.id); };
-            return div;
-        }
-        
-        function renderAgenda(container, tasks) {
-            const wrap = document.createElement('div');
-            wrap.className = 'agenda-container';
-            const table = document.createElement('table');
-            table.className = 'agenda-table';
-            const thead = document.createElement('thead');
-            thead.innerHTML = `<tr><th class="ag-date-col">Date & Time</th><th class="ag-task-col">Task Item</th><th class="ag-meta-col">Details</th><th class="ag-notes-col">Notes</th></tr>`;
-            table.appendChild(thead);
-            const tbody = document.createElement('tbody');
-            let start = new Date(viewDate); start.setHours(0,0,0,0);
-            let end = new Date(start); end.setDate(end.getDate() + 30);
-            const startStr = getLocalYMD(start);
-            const endStr = getLocalYMD(end);
-            const todayStr = getLocalYMD(new Date());
-
-            const rangeTasks = tasks.filter(t => t.date >= startStr && t.date <= endStr);
-            rangeTasks.sort((a,b) => {
-                if (a.date !== b.date) return a.date.localeCompare(b.date);
-                if (a.startTime && b.startTime) return a.startTime.localeCompare(b.startTime);
-                if (!a.startTime && !b.startTime) return (a.order||0) - (b.order||0);
-                return 0;
-            });
-
-            if (rangeTasks.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#888;">No tasks scheduled for the next 30 days.</td></tr>';
-            } else {
-                rangeTasks.forEach(t => {
-                    const tr = document.createElement('tr');
-                    if (t.date === todayStr) tr.classList.add('day-highlight');
-                    const [y,m,d] = t.date.split('-').map(Number);
-                    const dObj = new Date(y, m-1, d); 
-                    const dateStr = dObj.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
-                    const timeStr = t.startTime ? t.startTime : '<span style="color:#aaa">Anytime</span>';
-                    const tdDate = document.createElement('td'); tdDate.className = 'ag-date-col';
-                    tdDate.innerHTML = `<div>${dateStr}</div><div style="font-weight:normal; font-size:0.85rem">${timeStr}</div>`;
-                    const tdTask = document.createElement('td'); tdTask.className = 'ag-task-col';
-                    if(t.done) tdTask.style.textDecoration = 'line-through';
-                    
-                    const dotClass = t.urgency === 'high' ? 'u-dot-high' : (t.urgency === 'med' ? 'u-dot-med' : 'u-dot-low');
-                    tdTask.innerHTML = `<span class="urgency-dot ${dotClass}"></span> ${t.desc}`;
-                    
-                    const tdMeta = document.createElement('td'); tdMeta.className = 'ag-meta-col';
-                    let metaHtml = `<div><b>Dur:</b> ${t.durVal} ${t.durUnit}</div>`;
-                    metaHtml += `<div><b>Prio:</b> <span class="${t.prio >= 8 ? 'ag-prio-high':''}">${t.prio}</span> | <b>Urg:</b> ${t.urgency}</div>`;
-                    if(t.tags && t.tags.length) { metaHtml += `<div style="margin-top:4px">`; t.tags.forEach(tag => metaHtml += `<span class="ag-tag">${tag}</span>`); metaHtml += `</div>`; }
-                    tdMeta.innerHTML = metaHtml;
-                    const tdNotes = document.createElement('td'); tdNotes.className = 'ag-notes-col';
-                    tdNotes.innerText = t.notes || '';
-                    tr.appendChild(tdDate); tr.appendChild(tdTask); tr.appendChild(tdMeta); tr.appendChild(tdNotes);
-                    tr.style.cursor = 'pointer'; tr.onclick = () => openModal(t.id);
-                    tbody.appendChild(tr);
-                });
-            }
-            table.appendChild(tbody); wrap.appendChild(table); container.appendChild(wrap);
-        }
-
-        function renderMonth(con, tasks) {
-            con.className = 'grid-month';
-            const y = viewDate.getFullYear(), m = viewDate.getMonth();
-            const daysInM = new Date(y, m+1, 0).getDate();
-            const firstDay = new Date(y, m, 1).getDay();
-            const todayYMD = getLocalYMD(new Date());
-
-            ['S','M','T','W','T','F','S'].forEach(h => {
-                const d = document.createElement('div'); 
-                d.style.textAlign='center'; d.style.fontWeight='bold'; d.innerText=h; 
-                d.style.background='#eee'; d.style.padding='5px'; con.appendChild(d);
-            });
-            for(let i=0; i<firstDay; i++) con.appendChild(document.createElement('div'));
-            
-            for(let i=1; i<=daysInM; i++) {
-                const cell = document.createElement('div'); cell.className = 'month-cell';
-                const dObj = new Date(y, m, i);
-                const dateStr = getLocalYMD(dObj);
-                if (dateStr === todayYMD) cell.classList.add('day-highlight');
-                
-                cell.ondragover = (e) => { e.preventDefault(); e.currentTarget.classList.add('drag-over-active'); helper.style.display='none'; };
-                cell.ondragleave = (e) => e.currentTarget.classList.remove('drag-over-active');
-                cell.ondrop = (e) => {
-                    e.preventDefault(); e.currentTarget.classList.remove('drag-over-active');
-                    const id = e.dataTransfer.getData('text/plain');
-                    const tIndex = tasks.findIndex(t => t.id == id);
-                    if(tIndex > -1) { tasks[tIndex].date = dateStr; saveData(); }
-                };
-
-                const dayTasks = tasks.filter(t => t.date === dateStr);
-                cell.innerHTML = `<div class="month-cell-header">${i}</div>`;
-                dayTasks.forEach(t => {
-                    const pill = document.createElement('div'); pill.className = 'month-task-pill';
-                    pill.draggable = true;
-                    pill.ondragstart = (e) => handleDragStart(e, t.id);
-                    
-                    let barColor = '#ccc';
-                    if(t.tags && t.tags.length > 0) barColor = getTagColor(t.tags[0]);
-                    pill.style.borderLeftColor = barColor;
-                    
-                    const dotClass = t.urgency === 'high' ? 'u-dot-high' : (t.urgency === 'med' ? 'u-dot-med' : 'u-dot-low');
-                    pill.innerHTML = `<span class="urgency-dot ${dotClass}"></span> ${t.desc}`;
-                    
-                    cell.appendChild(pill);
-                    pill.onclick = (e) => { e.stopPropagation(); };
-                });
-                
-                cell.onclick = (e) => { 
-                    if(e.target === cell || e.target.classList.contains('month-cell-header')) { 
-                        viewDate = new Date(y,m,i); 
-                        setView('week'); 
-                    }
-                };
-                con.appendChild(cell);
-            }
-        }
-
-        function renderYear(con, tasks) {
-            con.className = 'grid-year';
-            const y = viewDate.getFullYear();
-            for(let m=0; m<12; m++){
-                const card = document.createElement('div'); card.className='year-card';
-                card.innerHTML = `<h3>${new Date(y,m,1).toLocaleDateString('en-US',{month:'long'})}</h3>`;
-                const mStr = String(m+1).padStart(2,'0');
-                const ymStr = `${y}-${mStr}`;
-                const count = tasks.filter(t => t.date.startsWith(ymStr) && !t.done).length;
-                card.innerHTML += `<p>${count} active items</p>`;
-                card.onclick = () => { viewDate = new Date(y,m,1); setView('month'); };
-                con.appendChild(card);
-            }
-        }
-
-        function updateTagList() {
-            tagsSet.clear();
-            tasks.forEach(t => { if(t.tags) t.tags.forEach(tag => tagsSet.add(tag)); });
-            const sel = document.getElementById('tag-filter');
-            const currentVal = sel.value;
-            sel.innerHTML = '<option value="">Show All</option>';
-            Array.from(tagsSet).sort().forEach(tag => {
-                const opt = document.createElement('option');
-                opt.value = tag; opt.innerText = tag; sel.appendChild(opt);
-            });
-            sel.value = currentVal;
-        }
-
-        function saveData(keepScroll = false) { 
-            if(keepScroll) {
-                const el = document.querySelector('.cal-scroll-area');
-                if(el) savedScrollPos = el.scrollTop;
-            }
-            localStorage.setItem('ult_tasks', JSON.stringify(tasks)); 
-            updateTagList(); 
-            render(); 
-        }
+        function toggleDayCheck(el) { el.classList.toggle('checked'); }
 
         function openModal(id) {
             document.getElementById('modal').style.display = 'flex';
+            // Reset
+            document.getElementById('m-recur-check').checked = false;
+            document.getElementById('recur-options').style.display = 'none';
+            document.getElementById('r-freq').value = 'daily';
+            document.getElementById('r-interval').value = '1';
+            document.getElementById('r-days-container').style.display = 'none';
+            document.querySelectorAll('.recur-day-check').forEach(d => d.classList.remove('checked'));
+            document.getElementById('m-series-id').value = '';
+            document.getElementById('btn-delete').innerText = "Delete";
+
             if (id) {
                 const t = tasks.find(x => x.id == id);
                 document.getElementById('m-id').value = t.id;
@@ -1179,6 +639,10 @@
                 document.getElementById('m-urgency').value = t.urgency;
                 document.getElementById('m-notes').value = t.notes || '';
                 document.getElementById('m-done').checked = t.done;
+                if (t.recurringId) {
+                    document.getElementById('m-series-id').value = t.recurringId;
+                    document.getElementById('btn-delete').innerText = "Delete...";
+                }
             } else {
                 document.getElementById('m-id').value = '';
                 document.getElementById('m-desc').value = '';
@@ -1191,63 +655,476 @@
         }
 
         function saveTask() {
-            const id = document.getElementById('m-id').value;
-            const desc = document.getElementById('m-desc').value;
-            if(!desc) return alert("Description required");
-            const rawTags = document.getElementById('m-tags').value;
-            const tags = rawTags.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            const newOrder = tasks.length > 0 ? (Math.max(...tasks.map(t=>t.order||0)) + 1000) : 1000;
+            try {
+                const id = document.getElementById('m-id').value;
+                const desc = document.getElementById('m-desc').value;
+                if(!desc) return alert("Description required");
+                const rawTags = document.getElementById('m-tags').value;
+                const tags = rawTags.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                const isRecur = document.getElementById('m-recur-check').checked;
+                
+                // 1. New Recurring Rule
+                if (!id && isRecur) {
+                    const freq = document.getElementById('r-freq').value;
+                    const interval = parseInt(document.getElementById('r-interval').value) || 1;
+                    const byDays = [];
+                    if (freq === 'weekly') {
+                        document.querySelectorAll('.recur-day-check.checked').forEach(el => byDays.push(parseInt(el.dataset.day)));
+                        if (byDays.length === 0) return alert("Please select at least one day for weekly recurrence.");
+                    }
+                    const newRule = {
+                        id: Date.now(),
+                        desc: desc,
+                        startDate: document.getElementById('m-date').value,
+                        startTime: document.getElementById('m-time').value,
+                        durVal: parseInt(document.getElementById('m-dur-val').value),
+                        durUnit: document.getElementById('m-dur-unit').value,
+                        tags: tags,
+                        prio: document.getElementById('m-prio').value,
+                        urgency: document.getElementById('m-urgency').value,
+                        notes: document.getElementById('m-notes').value,
+                        freq: freq,
+                        interval: interval,
+                        byDays: byDays
+                    };
+                    recurringRules.push(newRule);
+                    updateRecurringTasks(); closeModal(); return;
+                }
 
-            const task = {
-                id: id ? parseInt(id) : Date.now(),
-                desc: desc,
-                date: document.getElementById('m-date').value,
-                startTime: document.getElementById('m-time').value,
-                durVal: parseInt(document.getElementById('m-dur-val').value),
-                durUnit: document.getElementById('m-dur-unit').value,
-                tags: tags,
-                prio: document.getElementById('m-prio').value,
-                urgency: document.getElementById('m-urgency').value,
-                notes: document.getElementById('m-notes').value,
-                done: document.getElementById('m-done').checked,
-                floated: false,
-                order: newOrder 
+                // 2. Normal Task
+                const maxOrder = tasks.length > 0 ? Math.max(...tasks.map(t=>t.order||0)) : 0;
+                const newOrder = maxOrder + 1000;
+                
+                const task = {
+                    id: id ? parseInt(id) : Date.now(),
+                    desc: desc,
+                    date: document.getElementById('m-date').value,
+                    startTime: document.getElementById('m-time').value,
+                    durVal: parseInt(document.getElementById('m-dur-val').value),
+                    durUnit: document.getElementById('m-dur-unit').value,
+                    tags: tags,
+                    prio: document.getElementById('m-prio').value,
+                    urgency: document.getElementById('m-urgency').value,
+                    notes: document.getElementById('m-notes').value,
+                    done: document.getElementById('m-done').checked,
+                    floated: false,
+                    order: newOrder,
+                    recurringId: document.getElementById('m-series-id').value ? parseInt(document.getElementById('m-series-id').value) : undefined
+                };
+                if(id) {
+                    const idx = tasks.findIndex(x => x.id == id);
+                    if (tasks[idx].floated) task.floated = true; 
+                    if (tasks[idx].order !== undefined) task.order = tasks[idx].order;
+                    tasks[idx] = task;
+                } else { tasks.push(task); }
+                closeModal(); saveData(true);
+            } catch(e) {
+                console.error(e);
+                alert("Error saving task: " + e.message);
+            }
+        }
+
+        // --- 9. DELETE HANDLER ---
+        function handleDeleteClick() {
+            const id = parseInt(document.getElementById('m-id').value);
+            const seriesId = document.getElementById('m-series-id').value;
+            if (!id) return;
+
+            if (seriesId) {
+                const choice = prompt("Type '1' to delete ONLY this task.\nType '2' to delete THIS and ALL FUTURE tasks.\nType '3' to delete the ENTIRE series history.");
+                if (choice === '1') {
+                    tasks = tasks.filter(t => t.id != id); saveData(true); closeModal();
+                } else if (choice === '2') {
+                    const thisTask = tasks.find(t => t.id == id);
+                    if(thisTask) {
+                        const cutOffDate = thisTask.date;
+                        stopRecurringRuleAtDate(parseInt(seriesId), cutOffDate);
+                        tasks = tasks.filter(t => {
+                            if (t.recurringId == seriesId && t.date >= cutOffDate) return false; 
+                            return true; 
+                        });
+                        saveData(true); closeModal();
+                    }
+                } else if (choice === '3') {
+                    recurringRules = recurringRules.filter(r => r.id != seriesId);
+                    tasks = tasks.filter(t => t.recurringId != seriesId);
+                    saveData(true); closeModal();
+                }
+            } else {
+                if(confirm("Delete task?")) { tasks = tasks.filter(t => t.id != id); saveData(true); closeModal(); }
+            }
+        }
+
+        function stopRecurringRuleAtDate(ruleId, dateStr) {
+            const ruleIdx = recurringRules.findIndex(r => r.id == ruleId);
+            if (ruleIdx > -1) {
+                const d = new Date(dateStr + 'T00:00:00');
+                d.setDate(d.getDate() - 1);
+                recurringRules[ruleIdx].endDate = getLocalYMD(d);
+            }
+        }
+
+        // --- 10. IO & SAVE ---
+        function exportData() {
+            const dataStr = JSON.stringify({ tasks: tasks, rules: recurringRules, notes: document.getElementById('sidebar-notes').value }, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const link = document.createElement('a'); link.href = dataUri; link.download = 'scheduler_backup.json';
+            document.body.appendChild(link); link.click(); link.remove();
+            setUnsaved(false);
+        }
+
+        function importData(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(data.tasks) tasks = data.tasks;
+                    if(data.rules) recurringRules = data.rules;
+                    if(data.notes) document.getElementById('sidebar-notes').value = data.notes;
+                    saveData();
+                    alert("Import successful.");
+                    setUnsaved(false);
+                    location.reload(); 
+                } catch(err) { alert("Error parsing file."); }
             };
-            if(id) {
-                const idx = tasks.findIndex(x => x.id == id);
-                if (tasks[idx].floated) task.floated = true; 
-                if (tasks[idx].order !== undefined) task.order = tasks[idx].order;
-                tasks[idx] = task;
-            } else { tasks.push(task); }
-            closeModal();
-            saveData(true); 
+            reader.readAsText(file);
         }
 
-        function deleteTask() {
-            const id = document.getElementById('m-id').value;
-            if(id && confirm("Delete task?")) { tasks = tasks.filter(t => t.id != id); saveData(true); closeModal(); }
+        function saveData(keepScroll = false) { 
+            try {
+                if(keepScroll) { const el = document.querySelector('.cal-scroll-area'); if(el) savedScrollPos = el.scrollTop; }
+                localStorage.setItem('ult_tasks', JSON.stringify(tasks)); 
+                localStorage.setItem('ult_rules', JSON.stringify(recurringRules));
+                setUnsaved(true);
+                updateTagList(); render(); 
+            } catch(e) {
+                console.error("Save failed", e);
+                alert("Critical error: Could not save data.");
+            }
         }
 
+        function saveNotes() { localStorage.setItem('ult_notes', document.getElementById('sidebar-notes').value); setUnsaved(true); }
+        function handlePrint() { isPrintMode = true; document.getElementById('print-notes-content').innerText = document.getElementById('sidebar-notes').value; render(); setTimeout(() => { window.print(); isPrintMode = false; render(); }, 500); }
+        function goToToday() { viewDate = new Date(); render(); }
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
-        function setView(v) { 
-            currentView = v; 
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`button[onclick="setView('${v}')"]`).classList.add('active');
-            render(); 
-        }
+        function setView(v) { currentView = v; document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); document.querySelector(`button[onclick="setView('${v}')"]`).classList.add('active'); render(); }
+        
         function changeDate(d) {
-            if(currentView === 'year') {
-                viewDate.setFullYear(viewDate.getFullYear() + d);
-            } else if(currentView === 'month') { 
-                viewDate.setMonth(viewDate.getMonth() + d); 
-            } else if (currentView === 'agenda') { 
-                viewDate.setDate(viewDate.getDate() + (d * 7)); 
+            if(currentView === 'year') { viewDate.setFullYear(viewDate.getFullYear() + d);
+            } else if(currentView === 'month') { viewDate.setMonth(viewDate.getMonth() + d); 
+            } else if (currentView === 'agenda') { viewDate.setDate(viewDate.getDate() + (d * 7)); 
             } else { 
                 let jump = currentView === 'week' ? 7 : (currentView === '4day' ? 4 : 1); 
                 viewDate.setDate(viewDate.getDate() + (d * jump)); 
             }
             render();
         }
+
+        function shiftDay(amount) {
+            viewDate.setDate(viewDate.getDate() + amount);
+            render();
+        }
+        function updateTagList() {
+            tagsSet.clear();
+            tasks.forEach(t => { if(t.tags) t.tags.forEach(tag => tagsSet.add(tag)); });
+            const sel = document.getElementById('tag-filter');
+            const currentVal = sel.value;
+            sel.innerHTML = '<option value="">Show All</option>';
+            Array.from(tagsSet).sort().forEach(tag => { const opt = document.createElement('option'); opt.value = tag; opt.innerText = tag; sel.appendChild(opt); });
+            sel.value = currentVal;
+        }
+
+        // --- 11. RENDER ENGINE (REORGANIZED) ---
+        function render() {
+            try {
+                const container = document.getElementById('calendar-container'); container.innerHTML = ''; container.className = ''; container.removeAttribute('style'); 
+
+                const filterTag = document.getElementById('tag-filter').value.toLowerCase();
+                const filteredTasks = tasks.filter(t => !filterTag || (t.tags && t.tags.some(tag => tag.toLowerCase() === filterTag)));
+                const options = { month: 'long', year: 'numeric' }; if (currentView === 'day') options.day = 'numeric';
+                document.getElementById('current-date-display').innerText = viewDate.toLocaleDateString('en-US', options);
+                
+                const sortedTasks = filteredTasks.sort((a,b) => {
+                    if(a.done && !b.done) return 1; if(!a.done && b.done) return -1;
+                    if (!a.startTime && !b.startTime) return (a.order || 0) - (b.order || 0);
+                    if (a.startTime && b.startTime) return a.startTime.localeCompare(b.startTime);
+                    if (!a.startTime && b.startTime) return -1; return 1;
+                });
+
+                if (['day', '4day', 'week'].includes(currentView)) { 
+                    container.style.display = 'flex'; container.style.flexDirection = 'column'; 
+                    renderTimeGrid(container, currentView === 'day' ? 1 : (currentView === '4day' ? 4 : 7), sortedTasks); 
+                } else if (currentView === 'month') renderMonth(container, sortedTasks);
+                else if (currentView === 'year') renderYear(container, sortedTasks);
+                else if (currentView === 'agenda') { container.style.display = 'block'; container.style.overflowY = 'auto'; renderAgenda(container, filteredTasks); }
+            } catch (e) {
+                console.error("Render Error", e);
+            }
+        }
+
+        function createTaskElement(t, isAbsolute, rowHeight) {
+            const div = document.createElement('div');
+            div.className = `task-card u-${t.urgency} ${isAbsolute ? 'task-absolute' : ''} ${t.done ? 'task-done' : ''}`;
+            div.draggable = true;
+            div.ondragstart = (e) => handleDragStart(e, t.id);
+
+            let barColor = '#ccc'; if(t.tags && t.tags.length > 0) barColor = getTagColor(t.tags[0]);
+            div.style.borderLeftColor = barColor;
+
+            if (!isAbsolute) {
+                div.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); toggleDone(t.id); return false; };
+                div.ondragover = (e) => handleTaskDragOver(e);
+                div.ondragleave = (e) => handleTaskDragLeave(e);
+                div.ondrop = (e) => handleTaskDrop(e, t.id, t.date);
+            } else {
+                let mins = t.durUnit === 'hour' ? (t.durVal * 60) : (t.durVal || 30);
+                const scale = isPrintMode ? 0.3 : 0.5; 
+                let h = Math.max(24, Math.min(96, mins * scale));
+                div.style.height = h + 'px';
+            }
+
+            let tagsHtml = t.tags && t.tags.length ? `<div class="tags-display">${t.tags.join(', ')}</div>` : '';
+            const dotClass = t.urgency === 'high' ? 'u-dot-high' : (t.urgency === 'med' ? 'u-dot-med' : 'u-dot-low');
+            div.innerHTML = `<div style="display:flex; align-items:flex-start;"><span class="urgency-dot ${dotClass}"></span><strong>${t.desc}</strong></div>${tagsHtml}`;
+            div.title = `Notes: ${t.notes || ''}`;
+            div.onclick = (e) => { e.stopPropagation(); openModal(t.id); };
+            return div;
+        }
+
+        function handleGridDragOver(e, dateStr) { 
+            e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.classList.add('drag-over-active');
+            const rect = e.currentTarget.getBoundingClientRect(); const offsetY = e.clientY - rect.top;
+            const hHeight = isPrintMode ? PRINT_HOUR_HEIGHT : SCREEN_HOUR_HEIGHT;
+            const startHour = isPrintMode ? PRINT_START_HOUR : 0;
+            const totalMinutes = (offsetY / hHeight) * 60;
+            let hour = Math.floor(totalMinutes / 60) + startHour;
+            let minute = Math.floor((totalMinutes % 60) / 15) * 15;
+            if (minute === 60) { minute = 0; hour++; }
+            if(hour > 23) hour = 23;
+            const ampm = hour >= 12 ? 'PM' : 'AM'; const dispHour = hour % 12 || 12; const dispMin = minute.toString().padStart(2, '0');
+            helper.style.display = 'block'; helper.style.left = (e.pageX + 15) + 'px'; helper.style.top = (e.pageY + 15) + 'px';
+            helper.innerText = `Move to:\n${dateStr}\n${dispHour}:${dispMin} ${ampm}`;
+        }
+        function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over-active'); helper.style.display = 'none'; }
+        function handleTaskDrop(e, targetId, targetDateStr) {
+            e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove('drag-insert-above'); helper.style.display = 'none';
+            const draggedId = e.dataTransfer.getData('text/plain'); if (!draggedId || draggedId == targetId) return;
+            const draggedIdx = tasks.findIndex(t => t.id == draggedId); const targetIdx = tasks.findIndex(t => t.id == targetId);
+            if (draggedIdx > -1 && targetIdx > -1) {
+                const draggedTask = tasks[draggedIdx]; draggedTask.startTime = ''; draggedTask.floated = true; draggedTask.date = targetDateStr;
+                let dayTodos = tasks.filter(t => t.date === targetDateStr && !t.startTime);
+                dayTodos.sort((a,b) => (a.order||0) - (b.order||0));
+                dayTodos = dayTodos.filter(t => t.id != draggedId);
+                const localTargetIdx = dayTodos.findIndex(t => t.id == targetId);
+                if (localTargetIdx !== -1) { dayTodos.splice(localTargetIdx, 0, draggedTask); dayTodos.forEach((t, i) => t.order = i * 1000); saveData(true); }
+            }
+        }
+        function handleHeaderDrop(e, targetDateStr) {
+            e.preventDefault(); e.currentTarget.classList.remove('drag-over-active'); helper.style.display = 'none';
+            const id = e.dataTransfer.getData('text/plain'); const tIndex = tasks.findIndex(t => t.id == id);
+            if (tIndex > -1) { tasks[tIndex].startTime = ''; tasks[tIndex].date = targetDateStr; saveData(true); }
+        }
+        function handleGridDrop(e, targetDateStr) {
+            e.preventDefault(); e.currentTarget.classList.remove('drag-over-active'); helper.style.display = 'none';
+            const id = e.dataTransfer.getData('text/plain'); const tIndex = tasks.findIndex(t => t.id == id);
+            if (tIndex > -1) {
+                const rect = e.currentTarget.getBoundingClientRect(); const offsetY = e.clientY - rect.top;
+                const hHeight = isPrintMode ? PRINT_HOUR_HEIGHT : SCREEN_HOUR_HEIGHT;
+                const startHour = isPrintMode ? PRINT_START_HOUR : 0;
+                const totalMinutes = (offsetY / hHeight) * 60;
+                let hour = Math.floor(totalMinutes / 60) + startHour;
+                let minute = Math.floor((totalMinutes % 60) / 15) * 15;
+                if (minute === 60) { minute = 0; hour++; }
+                if(hour > 23) hour = 23;
+                tasks[tIndex].date = targetDateStr; 
+                tasks[tIndex].startTime = `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`; 
+                tasks[tIndex].floated = false; saveData(true); 
+            }
+        }
+        function handleTaskDragOver(e) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.classList.add('drag-insert-above'); helper.style.display = 'none'; }
+        function handleTaskDragLeave(e) { e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove('drag-insert-above'); }
+
+        function renderTimeGrid(container, days, displayTasks) {
+            const todayYMD = getLocalYMD(new Date());
+            let start = new Date(viewDate);
+            // Sliding Window: Do NOT snap to Sunday. Logic removed intentionally.
+            
+            const startH = isPrintMode ? PRINT_START_HOUR : 0;
+            const endH = isPrintMode ? PRINT_END_HOUR : 24;
+            const hHeight = isPrintMode ? PRINT_HOUR_HEIGHT : SCREEN_HOUR_HEIGHT;
+
+            // PRINT Logic Block (Simplified for stability)
+            if (isPrintMode) {
+                container.style.display = 'block';
+                const wrapper = document.createElement('div'); wrapper.className = 'print-grid-wrapper';
+                wrapper.style.gridTemplateColumns = `60px repeat(${days}, 1fr)`;
+                const corner = document.createElement('div'); corner.className = 'print-grid-header-cell';
+                corner.style.gridColumn = '1'; corner.style.gridRow = '1'; wrapper.appendChild(corner);
+                const timeCol = document.createElement('div'); timeCol.className = 'print-time-col'; timeCol.style.gridColumn = '1'; timeCol.style.gridRow = '2';
+                for(let i=startH; i<endH; i++) {
+                    const label = document.createElement('div'); label.className = 'time-label'; 
+                    label.style.height = hHeight + 'px'; label.innerText = i + ":00"; timeCol.appendChild(label);
+                }
+                wrapper.appendChild(timeCol);
+                for(let i=0; i<days; i++) {
+                    let d = new Date(start); d.setDate(d.getDate() + i); const dString = getLocalYMD(d); const colIdx = i + 2; 
+                    const header = document.createElement('div'); header.className = 'print-grid-header-cell';
+                    header.style.gridColumn = String(colIdx); header.style.gridRow = '1';
+                    header.innerHTML = d.toLocaleDateString('en-US', {weekday:'short', day:'numeric'});
+                    const bucket = document.createElement('div'); bucket.className = 'floating-bucket'; bucket.style.padding = '5px';
+                    displayTasks.filter(t => t.date === dString && !t.startTime).forEach(t => bucket.appendChild(createTaskElement(t, false, hHeight)));
+                    header.appendChild(bucket); wrapper.appendChild(header);
+                    const body = document.createElement('div'); body.className = 'print-grid-body-cell'; body.style.gridColumn = String(colIdx); body.style.gridRow = '2';
+                    body.style.height = ((endH - startH) * hHeight) + 'px';
+                    const gridBg = document.createElement('div'); gridBg.style.position='absolute'; gridBg.style.width='100%'; gridBg.style.zIndex='0';
+                    for(let h=startH; h<endH; h++){ const slot = document.createElement('div'); slot.style.height = hHeight + 'px'; slot.style.borderBottom = '1px solid #eee'; gridBg.appendChild(slot); }
+                    body.appendChild(gridBg);
+                    displayTasks.filter(t => t.date === dString && t.startTime).forEach(t => {
+                        const [h, m] = t.startTime.split(':').map(Number);
+                        if(h >= startH && h < endH) {
+                            const el = createTaskElement(t, true, hHeight);
+                            const relativeH = h - startH; const topPx = (relativeH * hHeight) + (m * (hHeight/60));
+                            let durMins = t.durUnit === 'hour' ? (t.durVal * 60) : t.durVal; if(!durMins) durMins = 30;
+                            const heightPx = durMins * (hHeight/60);
+                            el.style.top = topPx + 'px'; el.style.height = heightPx + 'px'; el.style.zIndex = '1';
+                            body.appendChild(el);
+                        }
+                    });
+                    wrapper.appendChild(body);
+                }
+                container.appendChild(wrapper); return; 
+            }
+
+            // SCREEN Logic Block
+            const headerRow = document.createElement('div'); headerRow.className = 'cal-header-row';
+            const corner = document.createElement('div'); corner.className = 'corner-spacer'; headerRow.appendChild(corner);
+            for(let i=0; i<days; i++) {
+                let d = new Date(start); d.setDate(d.getDate() + i); const dString = getLocalYMD(d); const isToday = dString === todayYMD;
+                const col = document.createElement('div'); col.className = 'header-col'; if(isToday) col.classList.add('day-highlight');
+                col.ondragover = (e) => { e.preventDefault(); e.currentTarget.classList.add('drag-over-active'); helper.style.display='none'; }; 
+                col.ondragleave = (e) => e.currentTarget.classList.remove('drag-over-active');
+                col.ondrop = (e) => handleHeaderDrop(e, dString);
+                const title = document.createElement('div'); title.className = `day-title ${isToday?'today':''}`; title.innerText = d.toLocaleDateString('en-US', {weekday:'short', day:'numeric'}); title.onclick = () => { viewDate = new Date(d); setView('day'); }; col.appendChild(title);
+                const bucket = document.createElement('div'); bucket.className = 'floating-bucket';
+                displayTasks.filter(t => t.date === dString && !t.startTime).forEach(t => bucket.appendChild(createTaskElement(t, false, hHeight)));
+                col.appendChild(bucket); headerRow.appendChild(col);
+            }
+            container.appendChild(headerRow);
+            
+            const scrollArea = document.createElement('div'); scrollArea.className = 'cal-scroll-area';
+            const timeCol = document.createElement('div'); timeCol.className = 'time-labels-col'; timeCol.style.height = ((endH - startH) * hHeight) + 'px';
+            for(let i=startH; i<endH; i++) { const label = document.createElement('div'); label.className = 'time-label'; label.style.height = hHeight + 'px'; label.innerText = i + ":00"; timeCol.appendChild(label); }
+            scrollArea.appendChild(timeCol);
+            
+            for(let i=0; i<days; i++) {
+                let d = new Date(start); d.setDate(d.getDate() + i); const dString = getLocalYMD(d); const isToday = dString === todayYMD;
+                const col = document.createElement('div'); col.className = 'grid-col'; col.style.height = ((endH - startH) * hHeight) + 'px'; if(isToday) col.classList.add('day-highlight');
+                col.ondragover = (e) => handleGridDragOver(e, dString); col.ondragleave = (e) => handleDragLeave(e); col.ondrop = (e) => handleGridDrop(e, dString);
+                
+                const gridArea = document.createElement('div'); gridArea.className = 'grid-area';
+                for(let h=startH; h<endH; h++){ const slot = document.createElement('div'); slot.className = 'time-slot-bg'; slot.style.height = hHeight + 'px'; gridArea.appendChild(slot); }
+                if (isToday) {
+                    const now = new Date(); let h = now.getHours(); let m = now.getMinutes(); m = Math.round(m / 15) * 15; if (m === 60) { m = 0; h = (h + 1) % 24; }
+                    const topPx = ((h - startH) * 60 + m) * (hHeight / 60); const line = document.createElement('div'); line.className = 'current-time-line'; line.style.top = topPx + 'px'; gridArea.appendChild(line);
+                }
+                displayTasks.filter(t => t.date === dString && t.startTime).forEach(t => {
+                    const [h, m] = t.startTime.split(':').map(Number);
+                    if(h >= startH && h < endH) {
+                        const el = createTaskElement(t, true, hHeight);
+                        const relativeH = h - startH; const topPx = (relativeH * hHeight) + (m * (hHeight/60));
+                        let durMins = t.durUnit === 'hour' ? (t.durVal * 60) : t.durVal; if(!durMins) durMins = 30;
+                        const heightPx = durMins * (hHeight/60);
+                        el.style.top = topPx + 'px'; el.style.height = heightPx + 'px'; gridArea.appendChild(el);
+                    }
+                });
+                col.appendChild(gridArea); scrollArea.appendChild(col);
+            }
+            container.appendChild(scrollArea);
+            if(savedScrollPos !== null) { scrollArea.scrollTop = savedScrollPos; savedScrollPos = null; } else { scrollArea.scrollTop = 7 * hHeight; }
+        }
+
+        function renderMonth(con, tasks) {
+            con.className = 'grid-month'; const y = viewDate.getFullYear(), m = viewDate.getMonth(); const daysInM = new Date(y, m+1, 0).getDate(); const firstDay = new Date(y, m, 1).getDay(); const todayYMD = getLocalYMD(new Date());
+            ['S','M','T','W','T','F','S'].forEach(h => { const d = document.createElement('div'); d.style.textAlign='center'; d.style.fontWeight='bold'; d.innerText=h; d.style.background='#eee'; d.style.padding='5px'; con.appendChild(d); });
+            for(let i=0; i<firstDay; i++) con.appendChild(document.createElement('div'));
+            for(let i=1; i<=daysInM; i++) {
+                const cell = document.createElement('div'); cell.className = 'month-cell'; const dObj = new Date(y, m, i); const dateStr = getLocalYMD(dObj); if (dateStr === todayYMD) cell.classList.add('day-highlight');
+                cell.ondragover = (e) => { e.preventDefault(); e.currentTarget.classList.add('drag-over-active'); helper.style.display='none'; }; 
+                cell.ondragleave = handleDragLeave;
+                cell.ondrop = (e) => { e.preventDefault(); e.currentTarget.classList.remove('drag-over-active'); helper.style.display='none'; const id = e.dataTransfer.getData('text/plain'); const tIndex = tasks.findIndex(t => t.id == id); if(tIndex > -1) { tasks[tIndex].date = dateStr; saveData(); } };
+                cell.innerHTML = `<div class="month-cell-header">${i}</div>`;
+                tasks.filter(t => t.date === dateStr).forEach(t => {
+                    const pill = document.createElement('div'); pill.className = 'month-task-pill'; pill.draggable = true;
+                    pill.ondragstart = (e) => { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', t.id); };
+                    let barColor = '#ccc'; if(t.tags && t.tags.length > 0) barColor = getTagColor(t.tags[0]); pill.style.borderLeftColor = barColor;
+                    const dotClass = t.urgency === 'high' ? 'u-dot-high' : (t.urgency === 'med' ? 'u-dot-med' : 'u-dot-low');
+                    pill.innerHTML = `<span class="urgency-dot ${dotClass}"></span> ${t.desc}`;
+                    cell.appendChild(pill); pill.onclick = (e) => { e.stopPropagation(); };
+                });
+                cell.onclick = (e) => { if(e.target === cell || e.target.classList.contains('month-cell-header')) { viewDate = new Date(y,m,i); setView('week'); } };
+                con.appendChild(cell);
+            }
+        }
+        function renderAgenda(container, tasks) {
+            const wrap = document.createElement('div'); wrap.className = 'agenda-container'; const table = document.createElement('table'); table.className = 'agenda-table';
+            table.innerHTML = `<thead><tr><th class="ag-date-col">Date & Time</th><th class="ag-task-col">Task Item</th><th class="ag-meta-col">Details</th><th class="ag-notes-col">Notes</th></tr></thead>`;
+            const tbody = document.createElement('tbody');
+            let start = new Date(viewDate); start.setHours(0,0,0,0); let end = new Date(start); end.setDate(end.getDate() + 30);
+            const startStr = getLocalYMD(start); const endStr = getLocalYMD(end); const todayStr = getLocalYMD(new Date());
+            const rangeTasks = tasks.filter(t => t.date >= startStr && t.date <= endStr).sort((a,b) => (a.date !== b.date ? a.date.localeCompare(b.date) : (a.startTime||'').localeCompare(b.startTime||'')));
+            if (rangeTasks.length === 0) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#888;">No tasks scheduled for the next 30 days.</td></tr>';
+            else rangeTasks.forEach(t => {
+                const tr = document.createElement('tr'); if (t.date === todayStr) tr.classList.add('day-highlight');
+                const [y,m,d] = t.date.split('-').map(Number); const dateStr = new Date(y, m-1, d).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+                const timeStr = t.startTime ? t.startTime : '<span style="color:#aaa">Anytime</span>';
+                const recurIcon = t.recurringId ? `<span class="recurring-icon">&#8635;</span>` : '';
+                tr.innerHTML = `<td class="ag-date-col"><div>${dateStr}</div><div style="font-weight:normal; font-size:0.85rem">${timeStr}</div></td>
+                                <td class="ag-task-col" style="${t.done?'text-decoration:line-through':''}">${recurIcon}<span class="urgency-dot u-dot-${t.urgency}"></span> ${t.desc}</td>
+                                <td class="ag-meta-col"><div><b>Dur:</b> ${t.durVal} ${t.durUnit}</div><div><b>Prio:</b> ${t.prio} | <b>Urg:</b> ${t.urgency}</div></td>
+                                <td class="ag-notes-col">${t.notes || ''}</td>`;
+                tr.onclick = () => openModal(t.id); tbody.appendChild(tr);
+            });
+            table.appendChild(tbody); wrap.appendChild(table); container.appendChild(wrap);
+        }
+        function renderYear(con, tasks) {
+            con.className = 'grid-year'; const y = viewDate.getFullYear();
+            for(let m=0; m<12; m++){
+                const card = document.createElement('div'); card.className='year-card';
+                card.innerHTML = `<h3>${new Date(y,m,1).toLocaleDateString('en-US',{month:'long'})}</h3><p>${tasks.filter(t => t.date.startsWith(`${y}-${String(m+1).padStart(2,'0')}`) && !t.done).length} active items</p>`;
+                card.onclick = () => { viewDate = new Date(y,m,1); setView('month'); }; con.appendChild(card);
+            }
+        }
+        
+        // --- 12. STARTUP ---
+        // (Moved to very bottom to ensure functions exist)
+        try {
+            updateRecurringTasks();
+            updateTagList();
+            render();
+            // Force re-render to fix any layout hiccups
+            setTimeout(() => render(), 100);
+            
+            // Legacy rollover check
+            (function() {
+                let count = 0; const nowStr = getLocalYMD(new Date()); 
+                tasks.forEach(t => { if (!t.done && t.date < nowStr && !t.recurringId) { t.date = nowStr; t.startTime = ''; t.floated = true; count++; } });
+                if (count > 0) saveData();
+            })();
+
+        } catch(e) { console.error("Startup Error", e); }
+
+        setInterval(function() {
+            const line = document.querySelector('.current-time-line');
+            if(line) {
+                const now = new Date();
+                let h = now.getHours(); let m = now.getMinutes();
+                m = Math.round(m / 15) * 15; if (m === 60) { m = 0; h = (h + 1) % 24; }
+                const topPx = (h * 60) + m; line.style.top = topPx + 'px';
+            }
+            updateRecurringTasks();
+        }, 60000); 
     </script>
 </body>
 </html>
